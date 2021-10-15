@@ -2,6 +2,7 @@
 
 // ==== Local Modules used ====
 var Asset = require('./assetModel')
+var ErrorCollection = require('../../utils/errorCollection')
 
 
 
