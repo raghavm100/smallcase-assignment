@@ -38,17 +38,5 @@ var tradeSchema = new Schema({
 )
 
 
-// tradeSchema.post('find', function(next){
-//     let obj = this
-
-//     obj.tradeId = obj._id
-//     delete obj._id
-//     delete obj.updatedAt
-//     delete obj.createdAt
-//     delete obj.__v
-//     next(obj)
-// })
-
-
 module.exports = mongoose.model("trade", tradeSchema, "trade")
 

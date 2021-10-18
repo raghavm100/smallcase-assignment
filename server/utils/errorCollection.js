@@ -40,7 +40,15 @@ module.exports = {
     negativeQuantity: {
         code: 406,
         message: "Action not acceptable, pushing asset quantity below zero (0)"
+    },
+
+    // ==== Invalid Endpoint ====
+    invalidEndpoint: {
+        code: 404,
+        message: "Invalid Endpoint"
     }
+
+
 
 
 }

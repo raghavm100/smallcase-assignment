@@ -52,6 +52,10 @@ exports.buySecurity = async (req, res, next) => {
             assetExists = true
             if(existingAsset.assetType !== reqBody.assetType){
                 // ==== TODO: Throw Error saying asset type is different
+                let errRes = ErrorCollection.notAcceptable
+                errRes.message = "Ticker already exists as a different assetType"
+                res.status(errRes.code).json(errRes)
+                return
             }
         }        
         
@@ -182,6 +186,7 @@ exports.updateTrade = async(req, res, next) => {
         validationResult(req).throw()
         let reqParams = req.params
         let reqBody = req.body
+        let genericResponse= {message: "Trade Updated Successfully"}
         let newAssetDetails
 
         // ==== Fetch Details of old Trade & it's corrosponding asset ====
@@ -278,7 +283,7 @@ exports.updateTrade = async(req, res, next) => {
         // ==== Updating the trade as requested if no error occures ====
         let updatedTrade = await Trade.findByIdAndUpdate(oldTrade._id, reqBody)
 
-        res.json(updatedTrade)
+        res.json(genericResponse)
 
     }catch(err){
         next(err)
