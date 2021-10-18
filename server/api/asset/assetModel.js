@@ -2,6 +2,7 @@
 var mongoose = require("mongoose")
 
 // ==== Local Modules used ====
+var EnumCollection = require('../../utils/enumCollection')
 
 
 // ==== Configuration ====
@@ -25,7 +26,7 @@ var assetModel = new Schema({
     },
     assetType: {
         type: String,
-        enum: ["stock", "bond", "commodity", "currency"],
+        enum: EnumCollection.assetTypeEnum,
         default: "stock"
     }
 },

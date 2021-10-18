@@ -24,6 +24,7 @@ var Http = require("http")
 // ==== Local Modules used ====
 var App = require('./server/server')
 
+// ==== Setting up and starting http server ====
 var server = Http.createServer(App)
 server.listen(App.get('port'), () => {
     console.log(`Express server is running on port ${App.get('port')}`)

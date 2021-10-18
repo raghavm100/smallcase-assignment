@@ -2,6 +2,8 @@
 var {body, param, query} = require('express-validator')
 
 // ==== Local modules used ====
+var EnumCollection = require('../../utils/enumCollection')
+
 
 
 // ==== Validating Buy Assets ====
@@ -21,16 +23,23 @@ exports.checkBuyAsset = [
             return Promise.resolve()
         }),
 
-
     body("quantity")
         .exists().withMessage("quantity parameters is missing from body")
         .bail()
+        .isInt().withMessage("quantity can only be an integer whole number")
         .custom(quantityVal => {
             if(quantityVal < 1)
                 return Promise.reject("Quantity cannot be less than 1")
             return Promise.resolve()
         }),    
+
+    body("assetType")
+        .exists().withMessage("asset type parameter is missing from body")
+        .bail()
+        .isIn(EnumCollection.assetTypeEnum).withMessage(`asset type can only be ${EnumCollection.assetTypeEnum.join(" | ")}`)
 ]
+
+
 
 
 // ==== Validating Sell Assets ====
@@ -52,12 +61,20 @@ exports.checkSellAsset = [
     body("quantity")
         .exists().withMessage("quantity parameters is missing from body")
         .bail()
+        .isInt().withMessage("quantity can only be an integer whole number")
         .custom(quantityVal => {
             if(quantityVal < 1)
                 return Promise.reject("Quantity cannot be less than 1")
             return Promise.resolve()
-        }),    
+        }),  
+        
+    body("assetType")
+        .exists().withMessage("asset type parameter is missing from body")
+        .bail()
+        .isIn(EnumCollection.assetTypeEnum).withMessage(`asset type can only be ${EnumCollection.assetTypeEnum.join(" | ")}`)
 ]
+
+
 
 
 // ==== Validation for delete trade ====
@@ -69,8 +86,15 @@ exports.checkDeleteTrade = [
 ]
 
 
+
+
 // ==== Validating Update Trade ====
 exports.checkUpdateTrade = [
+    param("id")
+        .exists().withMessage("TradeId is missing from URL parameters")
+        .bail()
+        .isMongoId().withMessage("Trade Id is not a valid Id."),
+
     body("ticker")
         .exists().withMessage("ticker parameter is missing.")
         .bail()
@@ -88,6 +112,7 @@ exports.checkUpdateTrade = [
     body("quantity")
         .exists().withMessage("quantity parameters is missing from body")
         .bail()
+        .isInt().withMessage("quantity can only be an integer whole number")
         .custom(quantityVal => {
             if(quantityVal < 1)
                 return Promise.reject("Quantity cannot be less than 1")
@@ -97,5 +122,5 @@ exports.checkUpdateTrade = [
     body("tradeType")
         .exists().withMessage("Trade type is missing from body")
         .bail()
-        .isIn(["buy", "sell"]).withMessage("Trade type can only be buy or sell")
+        .isIn(EnumCollection.tradeTypeEnum).withMessage(`Trade type can only be ${EnumCollection.tradeTypeEnum.join(" | ")}`)
 ]

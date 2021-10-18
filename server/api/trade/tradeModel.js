@@ -2,7 +2,7 @@
 var mongoose = require("mongoose")
 
 // ==== Local Modules used ====
-
+var EnumCollection = require('../../utils/enumCollection')
 
 // ==== Configuration ====
 var Schema = mongoose.Schema
@@ -15,7 +15,7 @@ var tradeSchema = new Schema({
     },
     tradeType: {
         type: String,
-        enum: ["buy", "sell"],
+        enum: EnumCollection.tradeTypeEnum,
         required: [true, "tradeType is required"]
     },
     amount: {
@@ -30,7 +30,7 @@ var tradeSchema = new Schema({
     },
     assetType: {
         type: String,
-        enum: ["stock", "bond", "commodity", "currency"],
+        enum: EnumCollection.assetTypeEnum,
         default: "stock"
     }
 },
