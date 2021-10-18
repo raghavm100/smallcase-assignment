@@ -14,11 +14,11 @@ router.route('/buy')
     .post(tradeValidator.checkBuyAsset, controller.buySecurity)
 
 router.route('/sell')
-    .post(controller.sellSecurity)
+    .post(tradeValidator.checkSellAsset, controller.sellSecurity)
 
 router.route('/:id')
-    .delete(controller.deleteTrade)
-    .patch(controller.updateTrade)
+    .delete(tradeValidator.checkDeleteTrade, controller.deleteTrade)
+    .patch(tradeValidator.checkUpdateTrade, controller.updateTrade)
 
 
 module.exports = router

@@ -32,6 +32,8 @@ var assetModel = new Schema({
     {timestamps: true}
 )
 
+assetModel.index({ ticker: 1 })
+
 
 
 module.exports = mongoose.model("asset", assetModel, "asset")

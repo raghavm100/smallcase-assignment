@@ -12,5 +12,8 @@ router.route('/')
 router.route('/returns')
     .get(controller.fetchReturns)
 
+router.route('/cumulative-returns')
+    .get(controller.fetchCumulativeReturns)
+
 
 module.exports = router

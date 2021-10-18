@@ -4,11 +4,13 @@ var router = require('express').Router()
 // ==== Local Modules used ====
 var tradeRoutes = require('./trade/tradeRoutes')
 var assetRoutes = require('./asset/assetRoutes')
+var healthRoutes = require('./health/healthRoutes')
 
 
 // ==== Routing internally ====
 router.use('/trades', tradeRoutes)
 router.use('/assets', assetRoutes)
+router.use('/health', healthRoutes)
 
 
 

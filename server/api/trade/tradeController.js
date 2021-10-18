@@ -79,6 +79,7 @@ exports.buySecurity = async (req, res, next) => {
 // ==== Sell Asset ====
 exports.sellSecurity = async(req, res, next) => {
     try{
+        validationResult(req).throw()
         let reqBody = req.body
         reqBody.tradeType = "sell"
         
@@ -118,14 +119,29 @@ exports.sellSecurity = async(req, res, next) => {
 // ==== Remove a trade ====
 exports.deleteTrade = async(req, res, next) => {
     try{
+        validationResult(req).throw()
         let reqParams = req.params
         let deleteAsset = false
-        let genericResponse= {message: "Trage Deleted Successfully"}
+        let genericResponse= {message: "Trade Deleted Successfully"}
         
+        // ==== Fetch trade details ====
         let tradeDetails = await Trade.findById(reqParams.id).lean()
-        let assetDetails = await Asset.findOne({ticker: tradeDetails.ticker})
+        if(!tradeDetails){
+            // ==== Throw error if trade does not exist ====
+            let errRes = ErrorCollection.noTrade
+            res.status(errRes.code).json(errRes)
+            return
+        }
 
-        // ==== TODO: Throw error if asset details is not found ====
+        // ==== Fetch asset of the trade ====
+        let assetDetails = await Asset.findOne({ticker: tradeDetails.ticker})
+        if(!assetDetails){
+            // ==== Throw error if asset does not exist ====
+            let errRes = ErrorCollection.noAsset
+            res.status(errRes.code).json(errRes)
+            return
+        }
+
 
         if(tradeDetails.tradeType === "buy"){
             if(tradeDetails.quantity === assetDetails.quantity){
@@ -163,13 +179,27 @@ exports.deleteTrade = async(req, res, next) => {
 // ==== Update Trade ====
 exports.updateTrade = async(req, res, next) => {
     try{
+        validationResult(req).throw()
         let reqParams = req.params
         let reqBody = req.body
         let newAssetDetails
 
         // ==== Fetch Details of old Trade & it's corrosponding asset ====
         let oldTrade = await Trade.findById(reqParams.id).lean()
+        if(!oldTrade){
+            // ==== Throw error if trade is not found ====
+            let errRes = ErrorCollection.noTrade
+            res.status(errRes.code).json(errRes)
+            return
+        }
+
         let assetDetails = await Asset.findOne({ticker: oldTrade.ticker})
+        if(!assetDetails){
+            // ==== Throw error is Asset is not found ====
+            let errRes = ErrorCollection.noAsset
+            res.status(errRes.code).json(errRes)
+            return
+        }
 
         // ==== Common process of removing trade from Asset collection ====
         let oldTradeFactor = oldTrade.tradeType === "buy" ? -1 : 1
