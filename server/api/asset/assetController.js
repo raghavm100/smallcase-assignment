@@ -13,12 +13,15 @@ exports.fetchPortfolio = async(req, res, next) => {
         let limit = parseInt(reqQuery.limit) || 10
         let offset = parseInt(reqQuery.offset) || 0
 
+        // ==== Fetching total asset count and a list of assets ====
         let totalAssets = await Asset.find({}).countDocuments()
         let assetList = await Asset.find()
             .sort({createdAt: -1})
             .limit(limit)
             .skip(offset)
 
+
+        // ==== Building object to include page details and asset list ====
         let resObj = {
             totalCount: totalAssets,
             totalPages: Math.ceil(totalAssets / limit),
@@ -42,6 +45,7 @@ exports.fetchReturns = async(req, res, next) => {
         let limit = parseInt(reqQuery.limit) || 10
         let offset = parseInt(reqQuery.offset) || 0
 
+        // ==== Fetching total asset count and aggregated result for sum of each asset's returns ====
         let totalAssets = await Asset.find({}).countDocuments()
         let allReturns = await Asset.aggregate([
             {$sort: {createdAt: -1}},
@@ -117,6 +121,7 @@ exports.fetchCumulativeReturns = async (req, res, next) => {
             }
         ])
 
+        
         // ==== Building response as per query response ====
         if(allReturns.length === 0){
             resObj.message = "Portfolio is empty"

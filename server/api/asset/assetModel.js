@@ -33,6 +33,7 @@ var assetModel = new Schema({
     {timestamps: true}
 )
 
+//  ==== Attaching an index to ticker as it's heavily searched while Trade operations ====
 assetModel.index({ ticker: 1 })
 
 

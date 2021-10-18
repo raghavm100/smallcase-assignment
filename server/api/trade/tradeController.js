@@ -16,12 +16,15 @@ exports.fetchTrades = async(req, res, next) => {
         let limit = parseInt(reqQuery.limit) || 10
         let offset = parseInt(reqQuery.offset) || 0
 
+        // ==== Fetching total count and list of Trades ====
         let totalTrades = await Trade.find({}).countDocuments()
         let tradeList = await Trade.find()
             .sort({createdAt: -1})
             .limit(limit)
             .skip(offset)
 
+
+        // ==== Building Response object for page data and Trade list ====
         let resObj = {
             totalCount: totalTrades,
             totalPages: Math.ceil(totalTrades / limit),
@@ -47,18 +50,21 @@ exports.buySecurity = async (req, res, next) => {
 
         reqBody.tradeType = "buy"
 
+        // ==== Initial check to see if Asset (with ticker and assetType) already exists or not ====
         let existingAsset = await Asset.findOne({ ticker: reqBody.ticker })
         if(existingAsset){
             assetExists = true
             if(existingAsset.assetType !== reqBody.assetType){
-                // ==== TODO: Throw Error saying asset type is different
+                // ==== Throw Error saying asset type is different ====
                 let errRes = ErrorCollection.notAcceptable
                 errRes.message = "Ticker already exists as a different assetType"
                 res.status(errRes.code).json(errRes)
                 return
             }
-        }        
+        }
+
         
+        // ==== Creating Trade and updating the existing Asset if any ====
         let purchasedTrade = await Trade.create(reqBody)
         if(assetExists){
             existingAsset.averagePrice = ( (existingAsset.averagePrice * existingAsset.quantity) + (purchasedTrade.amount * purchasedTrade.quantity) ) / (existingAsset.quantity + purchasedTrade.quantity)
@@ -87,6 +93,7 @@ exports.sellSecurity = async(req, res, next) => {
         let reqBody = req.body
         reqBody.tradeType = "sell"
         
+        // ==== Checking is asset exists before selling them ====
         let existingAsset = await Asset.findOne({ ticker: reqBody.ticker, assetType: reqBody.assetType })
         if(!existingAsset){
             let errRes = ErrorCollection.noAsset
@@ -101,8 +108,10 @@ exports.sellSecurity = async(req, res, next) => {
             return
         }
 
+        // ==== Adding trade and updating Assets ====
         let soldTrade = await Trade.create(reqBody)
         existingAsset.quantity = existingAsset.quantity - soldTrade.quantity
+
 
         // ==== Checking if Quantity of asset becomes empty in portfolio, it should be removed. ====
         if(existingAsset.quantity === 0){
@@ -212,7 +221,7 @@ exports.updateTrade = async(req, res, next) => {
 
         assetDetails.averagePrice = ((assetDetails.averagePrice * assetDetails.quantity) + (oldTrade.amount * oldTrade.quantity * oldTradeFactor)) / (assetDetails.quantity + (oldTrade.quantity*oldTradeFactor))
         assetDetails.quantity = (assetDetails.quantity + (oldTrade.quantity*oldTradeFactor))
-        console.log(assetDetails)
+        // console.log(assetDetails)
 
         // ==== check if the Ticker is same ====
         if(oldTrade.ticker === reqBody.ticker){
@@ -223,12 +232,11 @@ exports.updateTrade = async(req, res, next) => {
             }            
             assetDetails.quantity = (assetDetails.quantity + (reqBody.quantity*newTradeFactor))
 
-            console.log(assetDetails)
+            // console.log(assetDetails)
 
             // ==== If the average price or quantity drops below 0, Throw errors ====
             if(assetDetails.averagePrice < 0 || assetDetails.quantity < 0){
                 // === Throw error saying asset price or quantity is hitting below 0 ====
-                console.log("Breaking below 0 barrier")
                 let errRes = ErrorCollection.negativeQuantity
                 res.status(errRes.code).json(errRes)
                 return
@@ -250,7 +258,6 @@ exports.updateTrade = async(req, res, next) => {
 
             if(newAssetDetails.averagePrice < 0 || newAssetDetails.quantity < 0){
                 // ==== Throw error ====
-                console.log("Breaking below 0 barrier")
                 let errRes = ErrorCollection.negativeQuantity
                 res.status(errRes.code).json(errRes)
                 return

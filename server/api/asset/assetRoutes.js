@@ -4,8 +4,8 @@ var router = require('express').Router()
 // ==== Local modules used ====
 var controller = require('./assetController')
 
-// ==== Routes ====
 
+// ==== Routes ====
 router.route('/')
     .get(controller.fetchPortfolio)
 
