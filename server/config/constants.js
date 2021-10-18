@@ -12,10 +12,10 @@
 module.exports = {
 
     // ==== Server ports and initial config ====
-    port: 3001,
+    port: process.env.PORT,
 
     // ==== Database URL ====
-    dbUrl: "",
+    dbUrl: process.env.DATABASE_URL,
 
     // ==== Assumed stock price when finding total returns ====
     assumedCurrentPrice: 100,

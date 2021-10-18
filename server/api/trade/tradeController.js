@@ -1,4 +1,5 @@
 // ==== Libraries used ====
+var { validationResult } = require('express-validator')
 
 // ==== Local Modules used ====
 var Trade = require('./tradeModel')
@@ -40,6 +41,7 @@ exports.fetchTrades = async(req, res, next) => {
 // ==== Add Trade ====
 exports.buySecurity = async (req, res, next) => {
     try{
+        validationResult(req).throw()
         let reqBody = req.body
         let assetExists = false
 
